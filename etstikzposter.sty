@@ -1,0 +1,347 @@
+\ProvidesPackage{etstikzposter}[2024/08/04 ets TikZ Poster Style]
+
+% define important lengths
+\makeatletter
+\newlength{\etstikzposter@logoheight} 
+\newlength{\etstikzposter@logorightmargin}
+\newlength{\etstikzposter@bannerheight} % height of title (banner) is controlled by how much content is in the title by tikzposter itself
+\newlength{\etstikzposter@margin}
+\newlength{\etstikzposter@titleinnersep}
+
+\ifthenelse{\lengthtest{\paperwidth > \paperheight}}
+{%landscape
+    \setlength{\etstikzposter@logoheight}{3.45cm}
+    \setlength{\etstikzposter@logorightmargin}{1.15cm}
+    \setlength{\etstikzposter@bannerheight}{13.27cm}
+}
+{%portrait
+    \setlength{\etstikzposter@logoheight}{3.5cm}
+    \setlength{\etstikzposter@logorightmargin}{2.15cm}
+    \setlength{\etstikzposter@bannerheight}{15.23cm}
+}
+\setlength{\etstikzposter@margin}{1.7cm}
+\setlength{\etstikzposter@titleinnersep}{1.7cm}
+
+\makeatother
+
+% declare options
+\RequirePackage{xkeyval}
+
+\settitle{
+    \vspace*{-\titleinnersep}
+    \vspace*{\TP@innermargin}
+    \hspace*{-\titleinnersep}
+    \hspace*{\TP@innermargin}
+    {\color{titlefgcolor}
+        \begin{minipage}{\titlewidth - 2\TP@innermargin}
+            {\bfseries \Huge \@title \par}
+            \begin{minipage}{\titlewidth - \etstikzposter@logorightmargin - 4.15\etstikzposter@logoheight - 2\TP@innermargin}
+                \vspace*{\titleinnersep}
+                {\huge  \@author \par}
+                \vspace*{\titleinnersep}
+                {\large  \@institute}
+            \end{minipage}
+        \end{minipage}
+    }
+}
+
+\RequirePackage{xcolor}
+% Use the following core colours if possible:
+% etsVibrantPurple
+% etsVibrantGreen
+% etsVibrantBlue
+% etsVibrantYellow
+% etsVibrantPink
+% etsDarkBlue
+% etsBlack
+% etsWhite
+
+\definecolor{etsDarkPurple}{cmyk}{0.94,1.00,0.36,0.48}
+\definecolor{etsDarkGreen}{cmyk}{0.88,0.49,0.59,0.60}
+\definecolor{etsDarkBlue}{cmyk}{1.00,0.87,0.43,0.46}
+\definecolor{etsDarkYellow}{cmyk}{0.59,0.51,0.54,0.50}
+\definecolor{etsDarkPink}{cmyk}{0.57,1.00,0.36,0.60}
+\definecolor{etsVibrantPurple}{cmyk}{0.87,1.00,0.18,0.06}
+\definecolor{etsVibrantGreen}{cmyk}{0.62,0.00,0.83,0.00}
+\definecolor{etsVibrantBlue}{cmyk}{0.66,0.00,0.29,0.00}
+\definecolor{etsVibrantYellow}{cmyk}{0.00,0.23,0.84,0.00}
+\definecolor{etsVibrantPink}{cmyk}{0.24,0.99,0.31,0.15}
+\definecolor{etsMutedPurple}{cmyk}{0.25,0.33,0.18,0.02}
+\definecolor{etsMutedGreen}{cmyk}{0.27,0.10,0.41,0.01}
+\definecolor{etsMutedBlue}{cmyk}{0.33,0.02,0.11,0.00}
+\definecolor{etsMutedYellow}{cmyk}{0.17,0.13,0.22,0.01}
+\definecolor{etsMutedPink}{cmyk}{0.13,0.33,0.15,0.01}
+
+\definecolor{etsBlack}{cmyk}{0, 0, 0, 1}
+\definecolor{etsBlack90}{cmyk}{0, 0, 0, 0.9}
+\definecolor{etsBlack80}{cmyk}{0, 0, 0, 0.8}
+\definecolor{etsBlack60}{cmyk}{0, 0, 0, 0.6}
+\definecolor{etsBlack40}{cmyk}{0, 0, 0, 0.4}
+\definecolor{etsBlack20}{cmyk}{0, 0, 0, 0.2}
+\definecolor{etsBlack15}{cmyk}{0, 0, 0, 0.15}
+\definecolor{etsBlack10}{cmyk}{0, 0, 0, 0.1}
+\definecolor{etsBlack5}{cmyk}{0, 0, 0, 0.05}
+\definecolor{etsWhite}{cmyk}{0, 0, 0, 0}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Define the eight core ets colours as defined in ets brand: https://www.ets.ac.uk/brand/brand-essentials/colour-palette
+\definecolorstyle{etsBlack}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{RGB}{0,0,0}
+    \definecolor{colorTwo}{RGB}{226,226,226} % shade of grey extracted from the template provided by ets
+    \definecolor{colorThree}{RGB}{172,20,90} % Pink / Vibrant of the ets monotone palette
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{colorTwo}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{colorTwo}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+\definecolorstyle{etsVibrantYellow}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{RGB}{255,202,54}
+    \definecolor{colorTwo}{RGB}{255,255,255} % White
+    \definecolor{colorThree}{RGB}{172,20,90} % Pink / Vibrant of the ets monotone palette
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{black}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{black}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+\definecolorstyle{etsVibrantPurple}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{RGB}{80,7,120} % Vibrant Purple of the ets monotone palette
+    \definecolor{colorTwo}{RGB}{255,255,255} % White
+    \definecolor{colorThree}{RGB}{0,0,0} % Black
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{colorTwo}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{colorTwo}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+
+\definecolorstyle{etsVibrantPink}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{RGB}{172,20,90} % Pink / Vibrant of the ets monotone palette
+    \definecolor{colorTwo}{RGB}{255,255,255} % White
+    \definecolor{colorThree}{RGB}{0,34,72} % Dark Blue of the ets monotone palette
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{colorTwo}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{colorTwo}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+\definecolorstyle{etsVibrantGreen}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{RGB}{82,193,82} % Vibrant Green of the ets monotone palette
+    \definecolor{colorTwo}{RGB}{255,255,255} % White
+    \definecolor{colorThree}{RGB}{172,20,90} % Pink / Vibrant of the ets monotone palette
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{colorTwo}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{colorTwo}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+\definecolorstyle{etsVibrantBlue}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{RGB}{52,198,198} % Vibrant Blue of the ets monotone palette
+    \definecolor{colorTwo}{RGB}{255,255,255} % White
+    \definecolor{colorThree}{RGB}{0,34,72} % Dark Blue of the ets monotone palette
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{colorTwo}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{colorTwo}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+\definecolorstyle{etsDarkBlue}{
+    % define the default color palette for this color style
+    \definecolor{colorOne}{named}{etsDarkBlue} % Dark Blue of the ets monotone palette
+    \definecolor{colorTwo}{named}{etsWhite} % White
+    \definecolor{colorThree}{named}{etsVibrantPink} % Pink / Vibrant of the ets monotone palette
+}{
+    % Background Colors
+    \colorlet{backgroundcolor}{colorTwo}
+    \colorlet{framecolor}{colorTwo}
+    % Title Colors
+    \colorlet{titlefgcolor}{colorTwo}
+    \colorlet{titlebgcolor}{colorOne}
+    % Block Colors
+    \colorlet{blocktitlebgcolor}{colorOne}
+    \colorlet{blocktitlefgcolor}{colorTwo}
+    \colorlet{blockbodybgcolor}{white}
+    \colorlet{blockbodyfgcolor}{black}
+    % innerblock colors
+    \colorlet{innerblocktitlebgcolor}{colorThree}
+    \colorlet{innerblocktitlefgcolor}{white}
+    \colorlet{innerblockbodybgcolor}{white}
+    \colorlet{innerblockbodyfgcolor}{black}
+    % note colors
+    \colorlet{notefgcolor}{white}
+    \colorlet{notebgcolor}{colorThree}
+    \colorlet{notefrcolor}{colorThree}
+}
+% Define title style - start
+\definetitlestyle{ets}{
+    width=\paperwidth, linewidth=10pt, innersep=\etstikzposter@titleinnersep,
+    titletotopverticalspace=0mm, titletoblockverticalspace=\etstikzposter@margin
+}{
+    \tikzset{
+        x=\etstikzposter@logoheight,
+        y=\etstikzposter@logoheight,
+        banner/.style={fill=titlebgcolor},
+        portico/.style={fill=titlefgcolor}
+    }
+    \newcommand{\rightmarginets}{\etstikzposter@logorightmargin}
+    % shift the origin to the bottom right of the title
+    \begin{scope}[shift={(\titleposright-\rightmarginets, \titleposbottom)}]
+        \makeatletter
+        \makeatother
+    \end{scope}
+}
+% Define title style - end
+
+% Define block style - start
+\defineblockstyle{ets}{
+    titlewidthscale=1, bodywidthscale=1, titleleft,
+    titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+    bodyverticalshift=0pt, roundedcorners=2pt, linewidth=0.1cm,
+    titleinnersep=0.5cm, bodyinnersep=1cm
+}{
+    \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
+        \ifBlockHasTitle %
+            \draw[color=blocktitlebgcolor, fill=blocktitlebgcolor] (blockbody.south west) rectangle (blocktitle.north east);
+            \draw[color=blocktitlebgcolor, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+        \else
+            \draw[color=blocktitlebgcolor, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+        \fi
+    \end{scope}
+}
+% Define block style - end
+
+% Define innerblock style - start
+\defineinnerblockstyle{ets}{
+    titlewidthscale=1, bodywidthscale=1, titleleft,
+    titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+    bodyverticalshift=0pt, roundedcorners=5, linewidth=4pt,
+    titleinnersep=10pt, bodyinnersep=12pt
+}{
+    \begin{scope}[line width=\innerblocklinewidth, rounded
+            corners=\innerblockroundedcorners, solid]
+        \ifInnerblockHasTitle %
+            \draw[color=innerblocktitlebgcolor, fill=innerblocktitlebgcolor]
+            (innerblockbody.south west) rectangle (innerblocktitle.north east);
+            \draw[color=innerblocktitlebgcolor, fill=innerblockbodybgcolor]
+            (innerblockbody.south west) rectangle (innerblockbody.north east);
+        \else
+            \draw[color=innerblocktitlebgcolor, fill=innerblockbodybgcolor]
+            (innerblockbody.south west) rectangle (innerblockbody.north east);
+        \fi
+    \end{scope}
+}
+% Define innerblock style - end
+
+\usetitlestyle{ets}
+\useblockstyle{ets}
+\useinnerblockstyle{ets}
+\usebackgroundstyle{Default}
+
+% comment out if you want to credit tikzposter
+\tikzposterlatexaffectionproofoff
+
+% Set the define color style
+\usecolorstyle{etsDarkYellow}
