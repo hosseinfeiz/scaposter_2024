@@ -150,7 +150,7 @@
     \colorlet{framecolor}{colorTwo}
     % Title Colors
     \colorlet{titlefgcolor}{colorTwo}
-    \colorlet{titlebgcolor}{colorOne}
+\colorlet{titlebgcolor}{colorOne}
     % Block Colors
     \colorlet{blocktitlebgcolor}{colorOne}
     \colorlet{blocktitlefgcolor}{colorTwo}
@@ -194,6 +194,7 @@
     \colorlet{notebgcolor}{colorThree}
     \colorlet{notefrcolor}{colorThree}
 }
+
 \definecolorstyle{etsVibrantGreen}{
     % define the default color palette for this color style
     \definecolor{colorOne}{RGB}{82,193,82} % Vibrant Green of the ets monotone palette
@@ -221,6 +222,7 @@
     \colorlet{notebgcolor}{colorThree}
     \colorlet{notefrcolor}{colorThree}
 }
+
 \definecolorstyle{etsVibrantBlue}{
     % define the default color palette for this color style
     \definecolor{colorOne}{RGB}{52,198,198} % Vibrant Blue of the ets monotone palette
@@ -248,6 +250,7 @@
     \colorlet{notebgcolor}{colorThree}
     \colorlet{notefrcolor}{colorThree}
 }
+
 \definecolorstyle{etsDarkBlue}{
     % define the default color palette for this color style
     \definecolor{colorOne}{named}{etsDarkBlue} % Dark Blue of the ets monotone palette
@@ -275,6 +278,7 @@
     \colorlet{notebgcolor}{colorThree}
     \colorlet{notefrcolor}{colorThree}
 }
+
 % Define title style - start
 \definetitlestyle{ets}{
     width=\paperwidth, linewidth=10pt, innersep=\etstikzposter@titleinnersep,
@@ -313,6 +317,24 @@
 }
 % Define block style - end
 
+% Define blockred style - start
+\defineblockstyle{blockred}{
+    titlewidthscale=1, bodywidthscale=1, titleleft,
+    titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+    bodyverticalshift=0pt, roundedcorners=2pt, linewidth=0.1cm,
+    titleinnersep=0.5cm, bodyinnersep=1cm
+}{
+    \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
+        \ifBlockHasTitle %
+            \draw[color=red, fill=red] (blockbody.south west) rectangle (blocktitle.north east);
+            \draw[color=red, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+        \else
+            \draw[color=red, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+        \fi
+    \end{scope}
+}
+% Define blockred style - end
+
 % Define innerblock style - start
 \defineinnerblockstyle{ets}{
     titlewidthscale=1, bodywidthscale=1, titleleft,
@@ -340,8 +362,10 @@
 \useinnerblockstyle{ets}
 \usebackgroundstyle{Default}
 
+
+
 % comment out if you want to credit tikzposter
 \tikzposterlatexaffectionproofoff
 
 % Set the define color style
-\usecolorstyle{etsDarkYellow}
+\usecolorstyle{etsDarkYellow}    
