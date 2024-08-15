@@ -7,7 +7,7 @@
 \usepackage{multicol} % Multiple columns
 \usepackage[backend=biber]{biblatex} 
 \addbibresource{main.bib} % Point to your .bib file
-
+\usepackage{qrcode}
 % Load Libertinus Math before fontspec
 \usepackage{amsmath} % Essential for traditional math formatting
 \usepackage{amssymb} % Provides additional math symbols
@@ -55,11 +55,11 @@
 
 \begin{columns}
 \column{0.5}
-\block{Introduction}{
+\block[titleoffsety=0.25cm, bodyoffsety=0.25cm]{Introduction}{
     Motion capture from only RGB cameras in a typical sports scene (e.g., boxing), with the presence of coaches, viewers, and close interactions between athletes, brings many challenges, such as heavy occlusion, background crowding, and fast, complicated movements. To address this problematic, a multi-view configuration was used. Our system only required the visibility of an athlete from two cameras. We also created a pipeline using machine and deep learning techniques that automated the process of creating animations}.
 
 
-\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Pipeline}{
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=0.5cm, bodyoffsety=0.5cm]{Pipeline}{
 \begin{overpic}[scale=3]{figures/pipeline.pdf}
 \color{white}
 \put(14.6,28.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont Yolov8}}
@@ -67,12 +67,12 @@
 \put(26.6,32.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont Epipolar Constraints}}
 \put(32.4,28.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont ViTPose}}
 \put(68,31.8){\fontsize{30}{16}\selectfont GMM Prior, VPoser}
-\put(17,5.6){\fontsize{22}{16}\selectfont Physics Body Model Generator}
+\put(16.6,5.6){\fontsize{25}{20}\selectfont Physics Body Model Generator}
 
 \put(68,19.5){\fontsize{40}{16}\selectfont$L_{2D}+L_{3D}+L_{\beta}$}
 \color{black}
-\put(69.5,26.1){\fontsize{18}{20}\selectfont Kinematics Optimization}
-\put(57,5.6){\fontsize{22}{16}\selectfont Multi-person Dynamics Optimization}
+\put(70,26.1){\fontsize{18}{20}\selectfont Kinematics Optimization}
+\put(56,5.6){\fontsize{25}{20}\selectfont Multi-person Dynamics Optimization}
 \put(13,35){\fontsize{20}{16}\selectfont Multi-frame Multi-view Tracking IDs}
 \put(38.5,35){\fontsize{20}{16}\selectfont Weighted Triangulation and Filtering
 
@@ -85,19 +85,21 @@
 \put(43,0){\includegraphics[scale=0.13]{figures/mujoco-tall.png}} 
 \put(88,0){\includegraphics[scale=0.28]{figures/final.png}} 
 
-\end{overpic}}
-
-\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Multi-frame Multi-view Tracking IDs}{
-    \begin{minipage}{\linewidth}
-        \begin{itemize}
-            \item \textbf{Tracking by Segmentation}: XMem is used for consistent ID assignment across frames by segmenting individuals in each view.~\cite{cheng2022xmem}
-            \item \textbf{Epipolar Constraint-based ID Matching}: IDs are aligned across multiple views by processing bounding box centroids with epipolar constraints.~\cite{wohler20093d}
-            \item \textbf{Top-Down 2D Pose Estimation}: This approach involves detecting individuals first and then localizing keypoints within the bounding boxes, ensuring precise and scalable pose estimation, particularly effective in challenging scenarios like low-resolution videos or fast movements.~\cite{xu2022vitpose}
-        \end{itemize}
-    \end{minipage}
+\end{overpic}\\
+The pipeline begins with generating bounding boxes ($\mathbf{bboxes}$) and robust tracking ($\mathrm{id}$) for each individual in the scene. These tracking results are used to produce 2D poses ($\mathbf{J}_{2D}$) using ViTPose~\cite{xu2022vitpose}. The triangulation process, produces smooth 3D keypoints ($\mathbf{J}_{3D}$). The kinematics optimization step incorporates the 2D and 3D keypoints, to create the SMPL parameters ($\theta$, $\beta$). The 3D relative joint positions ($\mathbf{p}$), initial pose state ($\mathbf{q}$) and velocity state ($\mathbf{v}$) of the humanoid (created using the physics body model generator), serve as a reference for a model predictive controller, which utilizes the iLQR optimizer~\cite{howell2022} to correct any artifacts in the motion.
 }
 
-\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=0.3cm, bodyoffsety=0.3cm]{Weighted Triangulation and Filtering}{
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=0.5cm, bodyoffsety=0.5cm]{Multi-frame Multi-view Tracking IDs}{
+\begin{minipage}{\linewidth}
+    \begin{itemize}
+        \item \textbf{Tracking by Segmentation}: XMem segments individuals per view for consistent ID assignment across frames.~\cite{cheng2022xmem}
+        \item \textbf{Epipolar Constraint-based ID Matching}: across views using bounding box centroids and epipolar constraints.~\cite{wohler20093d}
+        \item \textbf{Top-Down 2D Pose Estimation}: keypoints are localized within bounding boxes for precise pose estimation.~\cite{xu2022vitpose}
+    \end{itemize}
+\end{minipage}
+}
+
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=0.2cm, bodyoffsety=0.2cm]{Weighted Triangulation and Filtering}{
     The weighted triangulation estimates the 3D positions of the keypoints from their corresponding 2D keypoints from all $N$ cameras. The 3D positions of each joint are thus determined by solving the linear system:
 
     \begin{tabular}{@{}p{0.55\textwidth}@{} p{0.4\textwidth}@{}}
@@ -137,7 +139,7 @@
 }
 
 \column{0.5}
-\block{Kinematics Optimization}{
+\block[titleoffsety=0.25cm, bodyoffsety=0.25cm]{Kinematics Optimization}{
 Our kinematics optimization refines the SMPL model to minimize the difference between the provided 2D poses ($\mathbf{J}_{\text{2D}}$) from multiple views and 3D keypoints ($\mathbf{J}_{\text{3D}}$) obtained from triangulation. The process ensures temporal coherency and natural motion by incorporating smoothness and human motion priors. An LBFGS optimizer is used to solve the minimization problem, considering various loss terms, including 2D re-projection, 3D alignment, smoothness, and prior losses.
 
 \innerblock{Kinematics Optimization Formulation}{
@@ -145,33 +147,42 @@ Our kinematics optimization refines the SMPL model to minimize the difference be
       \min_{\theta} \quad & w_1 \, \mathrm{L}_\text{2D} + w_2 \, \mathrm{L}_\text{3D} + w_3 \, \mathrm{L}_\text{reg} +  w_4 \, \mathrm{L}_\text{smooth} + w_5 \, \mathrm{L}_{\text{GMM}} + w_6 \, \mathrm{L}_{\text{Vposer}} \,\,.
     \end{align}
     \begin{multicols}{2}
-            \begin{equation}
+        \begin{equation}
           \mathrm{L}_\text{2D} = \sum\limits_{\text{j} \in \text{$\mathcal{V}$}} \, \sum\limits_{\text{i} \in \text{$\mathbf{J}_{2D}$}} c_\text{j,i} \rho (\mathrm{J}_{\text{proj}_{j,i}} - \mathrm{J}_{2D_{j,i}})  \,,
+          \label{eq:loss2d}
         \end{equation}
+        \textbf{2D Re-projection Loss} (\ref{eq:loss2d}): Aligns the 3D joints with 2D joints using re-projection, weighted by confidence.
 
         \begin{equation}
-          \mathrm{L}_\text{3D} = \sum\limits_{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{J}_i(\theta, \beta) - \mathrm{J}_{3D,i}\|^2 \,,
+          \mathrm{L}_\text{3D} = \sum\limits{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{J}_i(\theta, \beta) - \mathrm{J}_{3D,i}\|^2 \,,
+          \label{eq:loss3d}
         \end{equation}
+        \textbf{3D Alignment Loss} (\ref{eq:loss3d}): Minimizes the difference between predicted and actual 3D joint positions, considering joint confidence.
 
         \begin{equation}
           \mathrm{L}_{\text{smooth}} = \sum\limits_{t} \| \theta^t - \theta^{t-1} \|^2 + \| \mathcal{M}(\theta^t, \beta) - \mathcal{M}(\theta^{t-1}, \beta) \|^2 \,.
+          \label{eq:loss-smooth}
         \end{equation}
+        \textbf{Smoothness Loss} (\ref{eq:loss-smooth}): Ensures temporal consistency by minimizing differences in poses and vertices over time.
 
         \begin{equation}
         \mathrm{L}_{\text{GMM}} = \frac{1}{N} \sum_{i=1}^{N} \text{GMM}(\theta_i, \beta), \quad \mathrm{L}_{\text{Vposer}} = \frac{1}{N} \sum_{i=1}^{N} (\text{z}(\theta_i)^{2}) \,.
+        \label{eq:loss-priors}
         \end{equation}
+        \textbf{Prior Loss} (\ref{eq:loss-priors}): Guides the optimization towards natural poses using GMM and Vposer priors.
     \end{multicols}
 }
 }
 
 \useblockstyle{blockred}
-\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Physics Body Model Generator}{
-    Since our goal is to reconstruct the motion of $K$ physics-based humanoids at each time step $t$, we define the combined state of all humanoids as $\mathbf{x}_t = (\mathbf{q}_t, \mathbf{v}_t)$, where $\mathbf{q}_t \in \mathbb{R}^{63K}$ and $\mathbf{v}_t \in \mathbb{R}^{62K}$ represent the rotation and velocity of the joints. Whereas $\mathbf{q}_t$ is a minimal coordinate representation of position-level coordinates, we also compute $\mathbf{p}_t \in \mathbb{R}^{21K}$ which are the 3D positions of the SMPL joints relative to the humanoid's body frame of reference. This vector is used for the optimization process. we are using xml modeling of Mujoco~\cite{todorov2012mujoco} for our humanoids.
-}
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1.23cm, bodyoffsety=1.23cm]{Physics Body Model Generator}{
+    Our goal is to reconstruct the motion of \( K \) physics-based humanoids at each time step \( t \). We define the combined state as \( \mathbf{x}_t = (\mathbf{q}_t, \mathbf{v}_t) \), where the joint rotations vector is \( \mathbf{q}_t \in \mathbb{R}^{63K} \), and the joint velocities vector is \( \mathbf{v}_t \in \mathbb{R}^{62K} \). The 3D SMPL joint positions are represented as \( \mathbf{p}_t \in \mathbb{R}^{21K} \).
 
+    The vector \( \mathbf{q}_t \) uses minimal coordinates for joint rotations, while \( \mathbf{p}_t \) represents the 3D positions relative to the humanoid's body frame, which are used in optimization. For humanoid modeling, we used the Mujoco~\cite{todorov2012mujoco} XML format.
+}
 \useblockstyle{ets}
 \block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Multi-person Dynamics Optimization}{
-The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}_{0:T}\) by minimizing the cost function:
+The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}_{0:T}\) by minimizing the cost function~\ref{eq:mpc_opt}. The reference positions
 \begin{tabular}{@{}p{0.55\textwidth}@{} p{0.43\textwidth}@{}}
 \innerblock[titlewidthscale=0.4, bodywidthscale=0.4]{Dynamics Optimization Formulation}{
 \begin{equation}
@@ -182,7 +193,7 @@ The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}
         \vspace{-165pt}
         \hspace{-1100pt}
         \parbox[t]{0.55\linewidth}{
-            The reference positions $\mathbf{p}_{t}$ and velocities $\mathbf{v}_t$ are extracted from the kinematics optimization at each frame $t$, and the trajectory optimization is "warm-started" using control parameters $\mathbf{u}_{t-1}$ from the previous frame.
+             $\mathbf{p}_{t}$ and velocities $\mathbf{v}_t$ are extracted from the kinematics optimization at each frame $t$, and the trajectory optimization is "warm-started" using control parameters $\mathbf{u}_{t-1}$ from the previous frame. The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\mathbf{x}_t + \alpha \mathbf{k}_t\), with \(\mathbf{K}_t\) and \(\mathbf{k}_t\) refined until convergence.
         }
     \end{tabular}
      \vskip -1.4cm
@@ -190,27 +201,31 @@ The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}
 
  
 
-The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\mathbf{x}_t + \alpha \mathbf{k}_t\), with \(\mathbf{K}_t\) and \(\mathbf{k}_t\) refined until convergence.
+
 }
 
-\block[titlewidthscale=0.6, bodywidthscale=0.6, titleoffsetx=-11.5cm, bodyoffsetx=-11.5cm, titleoffsety=1cm, bodyoffsety=1cm]{Discussion and Future Works}{
-    We created a 10-hour dataset of boxing motions showcasing various \\ interactions, techniques, and styles. This dataset is being used to \\ develop an interaction motion synthesis model for  generating \\intelligent VR responses.
+\block[titlewidthscale=0.385, bodywidthscale=0.385, titleoffsetx=-17.5cm, bodyoffsetx=-17.5cm, titleoffsety=1.3cm, bodyoffsety=1.3cm]{Discussion and Future Works}{
+    We created a 10-hour dataset of boxing motions\\ showcasing various interactions, techniques, \\ and styles. This dataset is being used to develop \\ an  interaction motion synthesis model for \\ generating intelligent VR responses.
 }
-
-\block[titlewidthscale=0.385, bodywidthscale=0.385, titleoffsetx=17.5cm, bodyoffsetx=17.5cm, titleoffsety=10.7cm, bodyoffsety=10.7cm]{Visualization}{
+\block[titlewidthscale=0.14, bodywidthscale=0.14, titleoffsetx=-2.2cm, bodyoffsetx=-2.2cm, titleoffsety=11.75cm, bodyoffsety=11.75cm]{Video}{
+    
+\qrcode[height=6.2cm]{https://www.example.com/video-url}
+}
+\block[titlewidthscale=0.46, bodywidthscale=0.46, titleoffsetx=15.4cm, bodyoffsetx=15.4cm, titleoffsety=11.8cm, bodyoffsety=11.8cm]{Visualization}{
     \begin{tikzpicture}[inner sep=0pt, outer sep=0pt]
         % First image
-        \node (img1) at (0,0) {\includegraphics[width=5.5cm, height=5cm]{figures/image20.png}};
+        \node (img1) at (0,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image20.png}};
         
         % Second image to the right of the first
-        \node (img2) at (2.2,0) {\includegraphics[width=5.5cm, height=5cm]{figures/image21.png}};
+        \node (img2) at (1.9,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image21.png}};
         
         % Third image to the right of the second
-        \node (img3) at (4.3,0) {\includegraphics[width=5.5cm, height=5cm]{figures/image23.png}};
-        
+        \node (img3) at (3.8,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image23.png}};
+        \node (img4) at (5.7,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image19.png}};        
         % Arrows between images
         \draw[->, line width=2mm] (img1.east) -- (img2.west);
         \draw[->, line width=2mm] (img2.east) -- (img3.west);
+        \draw[->, line width=2mm] (img3.east) -- (img4.west);
     \end{tikzpicture}
 }
 
@@ -232,7 +247,7 @@ The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\
     align=left,
     fill=titlebgcolor, inner sep=2mm] at (bottomleft) { % Increased inner sep
     \hspace{-1900pt}
-    \begin{tikzpicture}[scale=0.5] % Increased scale for the envelope
+    \begin{tikzpicture}[scale=0.3] % Increased scale for the envelope
         \draw (0,0) -- (1,0) -- (1,0.7) -- (0,0.7) -- cycle; % Envelope outline
         \draw (0,0.7) -- (0.5,0.35) -- (1,0.7); % Envelope flap
     \end{tikzpicture}
