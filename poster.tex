@@ -7,15 +7,20 @@
 \usepackage{multicol} % Multiple columns
 \usepackage[backend=biber]{biblatex} 
 \addbibresource{main.bib} % Point to your .bib file
-% Font settings
-\usepackage[sfdefault]{FiraSans} % Use Fira Sans for sans-serif text
-\usepackage{graphicx}
-\usepackage{fontspec}
-\usepackage{unicode-math} 
-\usepackage{hyperref}
-\setmainfont{FiraSans-Regular} % Set Fira Sans as the main font
-\setmathfont{STIX Two Math} % Set STIX Two Math for math
 
+% Load Libertinus Math before fontspec
+\usepackage{amsmath} % Essential for traditional math formatting
+\usepackage{amssymb} % Provides additional math symbols
+\usepackage{libertinus} % Libertinus for a more traditional math look
+
+% Font settings
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+% Use Libertinus fonts for both text and math
+\setmainfont{Libertinus Serif} % Set Libertinus Serif as the main font
+\setmathfont{Libertinus Math} 
 \begin{document}
 \maketitle
 
@@ -51,10 +56,10 @@
 \begin{columns}
 \column{0.5}
 \block{Introduction}{
-    Motion capture from only RGB cameras in a typical sports scene (e.g., boxing), with the presence of coaches, viewers, and close interactions between athletes, brings many challenges, such as heavy occlusion, background crowding, and fast, complicated movements. To address this problematic, a multi-view configuration was used. Our system only required the visibility of an athlete from two cameras. We also created a pipeline using machine and deep learning techniques that automated the process of creating animations~\cite{guo2021multi}.
-}
+    Motion capture from only RGB cameras in a typical sports scene (e.g., boxing), with the presence of coaches, viewers, and close interactions between athletes, brings many challenges, such as heavy occlusion, background crowding, and fast, complicated movements. To address this problematic, a multi-view configuration was used. Our system only required the visibility of an athlete from two cameras. We also created a pipeline using machine and deep learning techniques that automated the process of creating animations}.
 
-\block{Pipeline}{
+
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Pipeline}{
 \begin{overpic}[scale=3]{figures/pipeline.pdf}
 \color{white}
 \put(14.6,28.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont Yolov8}}
@@ -62,11 +67,11 @@
 \put(26.6,32.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont Epipolar Constraints}}
 \put(32.4,28.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont ViTPose}}
 \put(68,31.8){\fontsize{30}{16}\selectfont GMM Prior, VPoser}
+\put(17,5.6){\fontsize{22}{16}\selectfont Physics Body Model Generator}
 
 \put(68,19.5){\fontsize{40}{16}\selectfont$L_{2D}+L_{3D}+L_{\beta}$}
 \color{black}
 \put(69.5,26.1){\fontsize{18}{20}\selectfont Kinematics Optimization}
-\put(17,5.6){\fontsize{22}{16}\selectfont Physics Body Model Generator}
 \put(57,5.6){\fontsize{22}{16}\selectfont Multi-person Dynamics Optimization}
 \put(13,35){\fontsize{20}{16}\selectfont Multi-frame Multi-view Tracking IDs}
 \put(38.5,35){\fontsize{20}{16}\selectfont Weighted Triangulation and Filtering
@@ -79,19 +84,20 @@
 \put(43.2,8){\includegraphics[scale=0.13]{figures/mujoco-fat.png}} 
 \put(43,0){\includegraphics[scale=0.13]{figures/mujoco-tall.png}} 
 \put(88,0){\includegraphics[scale=0.28]{figures/final.png}} 
+
 \end{overpic}}
 
-\block{Multi-frame Multi-view Tracking IDs}{
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Multi-frame Multi-view Tracking IDs}{
     \begin{minipage}{\linewidth}
         \begin{itemize}
-            \item \textbf{Tracking by Segmentation}: XMem is used for consistent ID assignment across frames by segmenting individuals in each view.
-            \item \textbf{Epipolar Constraint-based ID Matching}: IDs are aligned across multiple views by processing bounding box centroids with epipolar constraints.
-            \item \textbf{Top-Down 2D Pose Estimation}: This approach involves detecting individuals first and then localizing keypoints within the bounding boxes, ensuring precise and scalable pose estimation, particularly effective in challenging scenarios like low-resolution videos or fast movements.
+            \item \textbf{Tracking by Segmentation}: XMem is used for consistent ID assignment across frames by segmenting individuals in each view.~\cite{cheng2022xmem}
+            \item \textbf{Epipolar Constraint-based ID Matching}: IDs are aligned across multiple views by processing bounding box centroids with epipolar constraints.~\cite{wohler20093d}
+            \item \textbf{Top-Down 2D Pose Estimation}: This approach involves detecting individuals first and then localizing keypoints within the bounding boxes, ensuring precise and scalable pose estimation, particularly effective in challenging scenarios like low-resolution videos or fast movements.~\cite{xu2022vitpose}
         \end{itemize}
     \end{minipage}
 }
 
-\block{Weighted Triangulation and Filtering}{
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=0.3cm, bodyoffsety=0.3cm]{Weighted Triangulation and Filtering}{
     The weighted triangulation estimates the 3D positions of the keypoints from their corresponding 2D keypoints from all $N$ cameras. The 3D positions of each joint are thus determined by solving the linear system:
 
     \begin{tabular}{@{}p{0.55\textwidth}@{} p{0.4\textwidth}@{}}
@@ -140,15 +146,15 @@ Our kinematics optimization refines the SMPL model to minimize the difference be
     \end{align}
     \begin{multicols}{2}
             \begin{equation}
-          \mathrm{L}_\text{2D} = \sum\limits{\text{j} \in \text{$\mathcal{V}$}} \, \sum\limits{\text{i} \in \text{$\mathbf{J}_{2D}$}} c_\text{j,i} \rho (\mathrm{J}_{\text{proj}_{j,i}} - \mathrm{J}_{2D_{j,i}})  \,,
+          \mathrm{L}_\text{2D} = \sum\limits_{\text{j} \in \text{$\mathcal{V}$}} \, \sum\limits_{\text{i} \in \text{$\mathbf{J}_{2D}$}} c_\text{j,i} \rho (\mathrm{J}_{\text{proj}_{j,i}} - \mathrm{J}_{2D_{j,i}})  \,,
         \end{equation}
 
         \begin{equation}
-          \mathrm{L}_\text{3D} = \sum\limits{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{J}_i(\theta, \beta) - \mathrm{J}_{3D,i}\|^2 \,,
+          \mathrm{L}_\text{3D} = \sum\limits_{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{J}_i(\theta, \beta) - \mathrm{J}_{3D,i}\|^2 \,,
         \end{equation}
 
         \begin{equation}
-          \mathrm{L}_{\text{smooth}} = \sum\limits{t} \| \theta^t - \theta^{t-1} \|^2 + \| \mathcal{M}(\theta^t, \beta) - \mathcal{M}(\theta^{t-1}, \beta) \|^2 \,.
+          \mathrm{L}_{\text{smooth}} = \sum\limits_{t} \| \theta^t - \theta^{t-1} \|^2 + \| \mathcal{M}(\theta^t, \beta) - \mathcal{M}(\theta^{t-1}, \beta) \|^2 \,.
         \end{equation}
 
         \begin{equation}
@@ -159,12 +165,12 @@ Our kinematics optimization refines the SMPL model to minimize the difference be
 }
 
 \useblockstyle{blockred}
-\block{Physics Body Model Generator}{
-    Since our goal is to reconstruct the motion of $K$ physics-based humanoids at each time step $t$, we define the combined state of all humanoids as $\mathbf{x}_t = (\mathbf{q}_t, \mathbf{v}_t)$, where $\mathbf{q}_t \in \mathbb{R}^{63K}$ and $\mathbf{v}_t \in \mathbb{R}^{62K}$ represent the rotation and velocity of the joints. Whereas $\mathbf{q}_t$ is a minimal coordinate representation of position-level coordinates, we also compute $\mathbf{p}_t \in \mathbb{R}^{21K}$ which are the 3D positions of the SMPL joints relative to the humanoid's body frame of reference. This vector is used for the optimization process.
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Physics Body Model Generator}{
+    Since our goal is to reconstruct the motion of $K$ physics-based humanoids at each time step $t$, we define the combined state of all humanoids as $\mathbf{x}_t = (\mathbf{q}_t, \mathbf{v}_t)$, where $\mathbf{q}_t \in \mathbb{R}^{63K}$ and $\mathbf{v}_t \in \mathbb{R}^{62K}$ represent the rotation and velocity of the joints. Whereas $\mathbf{q}_t$ is a minimal coordinate representation of position-level coordinates, we also compute $\mathbf{p}_t \in \mathbb{R}^{21K}$ which are the 3D positions of the SMPL joints relative to the humanoid's body frame of reference. This vector is used for the optimization process. we are using xml modeling of Mujoco~\cite{todorov2012mujoco} for our humanoids.
 }
 
 \useblockstyle{ets}
-\block{Multi-person Dynamics Optimization}{
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Multi-person Dynamics Optimization}{
 The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}_{0:T}\) by minimizing the cost function:
 \begin{tabular}{@{}p{0.55\textwidth}@{} p{0.43\textwidth}@{}}
 \innerblock[titlewidthscale=0.4, bodywidthscale=0.4]{Dynamics Optimization Formulation}{
@@ -173,7 +179,7 @@ The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}
  \label{eq:mpc_opt}
 \end{equation}
 }&
-        \vspace{-180pt}
+        \vspace{-165pt}
         \hspace{-1100pt}
         \parbox[t]{0.55\linewidth}{
             The reference positions $\mathbf{p}_{t}$ and velocities $\mathbf{v}_t$ are extracted from the kinematics optimization at each frame $t$, and the trajectory optimization is "warm-started" using control parameters $\mathbf{u}_{t-1}$ from the previous frame.
@@ -187,7 +193,7 @@ The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}
 The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\mathbf{x}_t + \alpha \mathbf{k}_t\), with \(\mathbf{K}_t\) and \(\mathbf{k}_t\) refined until convergence.
 }
 
-\block[titlewidthscale=0.6, bodywidthscale=0.6, titleoffsetx=-11.5cm, bodyoffsetx=-11.5cm, titleoffsety=0cm, bodyoffsety=0cm]{Discussion and Future Works}{
+\block[titlewidthscale=0.6, bodywidthscale=0.6, titleoffsetx=-11.5cm, bodyoffsetx=-11.5cm, titleoffsety=1cm, bodyoffsety=1cm]{Discussion and Future Works}{
     We created a 10-hour dataset of boxing motions showcasing various \\ interactions, techniques, and styles. This dataset is being used to \\ develop an interaction motion synthesis model for  generating \\intelligent VR responses.
 }
 
@@ -222,14 +228,26 @@ The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\
     text=titlefgcolor,
     outer sep=0pt,
     minimum width=\textwidth,
-    minimum height=2cm,
+    minimum height=2cm, % Increased height for more space
     align=left,
-    fill=titlebgcolor, inner sep=1mm] at (bottomleft) {
-    \begin{tikzpicture}[scale=0.3]
+    fill=titlebgcolor, inner sep=2mm] at (bottomleft) { % Increased inner sep
+    \hspace{-1900pt}
+    \begin{tikzpicture}[scale=0.5] % Increased scale for the envelope
         \draw (0,0) -- (1,0) -- (1,0.7) -- (0,0.7) -- cycle; % Envelope outline
         \draw (0,0.7) -- (0.5,0.35) -- (1,0.7); % Envelope flap
     \end{tikzpicture}
-     \href{mailto:hfa.zadeh.k@gmail.com}{hfa.zadeh.k@gmail.com}
+
+    \href{mailto:hfa.zadeh.k@gmail.com}{\Large hfa.zadeh.k@gmail.com} % Increased font size
+    \hspace{150pt} % Adjusted spacing
+    \Large Linked
+    \tikz[baseline=(i.base)]\node[fill=blue, rounded corners=0.5ex, text=white, inner sep=0.3ex, outer sep=0pt, minimum width=0pt, minimum height=0pt](i) {\large in}; % Increased font and inner sep
+    
+    \href{https://ca.linkedin.com/in/hosseinfeiz}{\Large Hossein Feiz} % Increased font size
+    \hspace{150pt} % Adjusted spacing
+    
+    \tikz[baseline=(i.base)]\node[fill=black, rounded corners=0.5ex, text=white, font=\bfseries\sffamily\Large, inner sep=0.4ex, outer sep=0pt, minimum width=0pt, minimum height=0pt](i) {X}; % Increased font size and inner sep
+    
+    \href{https://x.com/hosseinfeiz1}{\Large hosseinfeiz1} % Increased font size
 };
 
 \end{document}
