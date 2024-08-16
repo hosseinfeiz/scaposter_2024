@@ -157,78 +157,107 @@ If triangulation fails, we apply an extended Kalman filter to estimate 3D keypoi
 \block[titleoffsety=0.25cm, bodyoffsety=0.25cm]{Kinematics Optimization}{
 \fontsize{38}{40}\selectfont
 Our kinematics optimization refines the SMPL model to minimize the difference between the provided 2D poses ($\mathbf{J}_{\text{2D}}$) from multiple views and 3D keypoints ($\mathbf{J}_{\text{3D}}$) obtained from triangulation. The process ensures temporal coherency and natural motion by incorporating smoothness and human motion priors. An LBFGS optimizer is used to solve the minimization problem, considering various loss terms, including 2D re-projection, 3D alignment, smoothness, and prior losses.
-\vskip 0.2cm
-% \mathrm{L}_\text{2D} = \sum\limits_{\text{j} \in \text{$\mathcal{V}$}} \, \sum\limits_{\text{i} \in \text{$\mathbf{J}_{2D}$}} c_\text{j,i} \rho (\mathrm{J}_{\text{proj}_{j,i}} - \mathrm{J}_{2D_{j,i}}
+\vspace{0.4\baselineskip}
+
 \fontsize{30}{36}\selectfont
-\innerblock{Kinematics Optimization Formulation}{
+\innerblock{Kinematics Optimization Formulation: 
+$\min_{\theta} w_1 \, \mathrm{L}_\text{2D} + w_2 \, \mathrm{L}_\text{3D} + w_3 \, \mathrm{L}_\text{reg} + w_4 \, \mathrm{L}_\text{smooth} + w_5 \, \mathrm{L}_{\text{GMM}} + w_6 \, \mathrm{L}_{\text{Vposer}}$}{
     \begin{multicols}{2}
         \begin{itemize}
             \item \textbf{2D Re-projection Loss}: Aligns the 3D joints with 2D joints using re-projection, weighted by confidence.\\ $\mathrm{L}_\text{2D} = \sum\limits_{\text{j} \in \text{$\mathcal{V}$}} \, \sum\limits_{\text{i} \in \text{$\mathbf{J}_{2D}$}} c_\text{j,i} \rho (\mathrm{J}_{\text{proj}_{j,i}} - \mathrm{J}_{2D_{j,i}})$ 
-        \end{itemize}
-        
-        \begin{itemize}
+            \vspace{-0.39\baselineskip}
             \item \textbf{3D Alignment Loss}:  Minimizes the difference between predicted and actual 3D joint positions considering confidence. 
             \\ $\mathrm{L}_\text{3D} = \sum\limits_{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{J}_i(\theta, \beta) - \mathrm{J}_{3D,i}\|^2$
             \item \textbf{Smoothness Loss}: Ensures temporal consistency by minimizing differences in poses and vertices over time.\\
             $\mathrm{L}_{\text{smooth}} = \sum\limits_{t} \| \theta^t - \theta^{t-1} \|^2 + \| \mathcal{M}(\theta^t, \beta) - \mathcal{M}(\theta^{t-1}, \beta) \|^2$
-
+            \vspace{-0.54\baselineskip}
             \item \textbf{Prior Loss}:  Guides the optimization towards natural poses using GMM and Vposer priors. \\ $\mathrm{L}_{\text{GMM}} = \frac{1}{N} \sum_{i=1}^{N} \text{GMM}(\theta_i, \beta), \quad \mathrm{L}_{\text{Vposer}} = \frac{1}{N} \sum_{i=1}^{N} (\text{z}(\theta_i)^{2})$
         \end{itemize}
     \end{multicols}
+    \vspace{-0.39\baselineskip}
 }
+\vspace{-0.39\baselineskip}
 }
 
 \useblockstyle{blockred}
 
 \block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1.23cm, bodyoffsety=1.23cm]{Physics Body Model Generator}{
+\vspace{-0.39\baselineskip}
 \fontsize{38}{40}\selectfont
    Our goal is to reconstruct the motion of \( K \) physics-based humanoids at each time step \( t \). The combined state is \( \mathbf{x}_t = (\mathbf{q}_t, \mathbf{v}_t) \), where \( \mathbf{q}_t \in \mathbb{R}^{63K} \) is the joint rotations vector, and \( \mathbf{v}_t \in \mathbb{R}^{62K} \) is the joint velocities vector. The 3D SMPL joint positions are \( \mathbf{p}_t \in \mathbb{R}^{21K} \). The vector \( \mathbf{q}_t \) uses minimal coordinates for joint rotations, while \( \mathbf{p}_t \) represents the 3D positions relative to the humanoid's body frame, which are used in optimization. We used the Mujoco~\cite{todorov2012mujoco} XML format for multi-humanoid modeling.
+   \vspace{-0.39\baselineskip}
 }
 \useblockstyle{ets}
 \block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{Multi-person Dynamics Optimization}{
+\vspace{-0.39\baselineskip}
 \fontsize{38}{40}\selectfont
-The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}_{0:T}\) by minimizing the cost function~\ref{eq:mpc_opt}. The reference positions. $\mathbf{p}_{t}$ and velocities $\mathbf{v}_t$ are extracted from the kinematics optimization at each frame $t$, and the trajectory optimization is "warm-started" using control parameters $\mathbf{u}_{t-1}$ from the previous frame. The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\mathbf{x}_t + \alpha \mathbf{k}_t\), with \(\mathbf{K}_t\) and \(\mathbf{k}_t\) refined until convergence.
+The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}_{0:T}\) by minimizing the cost function. The reference positions. $\mathbf{p}_{t}$ and velocities $\mathbf{v}_t$ are extracted from the kinematics optimization at each frame $t$, and the trajectory optimization is "warm-started" using control parameters $\mathbf{u}_{t-1}$ from the previous frame. The control is updated iteratively as \(\Delta\mathbf{u}_t = \mathbf{K}_t\Delta\mathbf{x}_t + \alpha \mathbf{k}_t\), with \(\mathbf{K}_t\) and \(\mathbf{k}_t\) refined until convergence.
+\vspace{0.05\baselineskip}
+\fontsize{30}{36}\selectfont
+\innerblock[titlewidthscale=1, bodywidthscale=1]{Dynamics Optimization Formulation: $ \min_{\mathbf{u}_{0:T}} \sum_{t=0}^{T} w_1 \mathrm{L_{\text{reg},t}} + w_2 \mathrm{L}_{\text{p},t} + w_3 \mathrm{L}_{\text{v},t} + w_4 \mathrm{L}_{\text{collision},t}$}{
+\begin{multicols}{2}
+    \setlength{\itemsep}{0pt} % Remove space between items
+\begin{itemize}
+    \item \textbf{Position Loss}: Minimizes the difference between predicted and actual 3D joint positions in each short horizon. \\
+    $\mathrm{L}_{\text{p},t} = \sum\limits_{\text{i} \in \text{$\mathbf{J}_\text{3D}$}} \| \mathrm{p}_\text{i,t} - \mathrm{J}_\text{3D,i,t}\|^2$  
+    \vspace{-0.4\baselineskip}
+    \item \textbf{Velocity Loss}: Minimizes the difference between predicted and actual 3D joint velocities in each short horizon.\\  
+    $\mathrm{L}_{\text{v},t} = \sum\limits_{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{v}_\text{i,t} - \mathrm{v}_{3D,i,t}\|^2$
+\end{itemize}
+    \begin{itemize}
+        \item \textbf{Collision Loss}: The collision term penalizes the penetration between the geoms of different humanoids.  \\
+        $\mathrm{L}_{\text{collision},t} = \sum\limits_{\text{i\in{1\dots M}}} \sum\limits_{\text{j\in{1\dots M}}} \max(0, \epsilon - \text{dist}(G_{1_i}, G_{2_j}))$
+        \item \textbf{Regularization Loss}: Prevent sudden changes in control input. $\mathrm{L}_{\text{reg},t} = \|\mathbf{u}_t\|^2$
+    \end{itemize}
+\end{multicols}
+\vspace{-0.39\baselineskip}
+}
+\vspace{-0.5\baselineskip}
+}
 
-\innerblock[titlewidthscale=0.4, bodywidthscale=0.4]{Dynamics Optimization Formulation}{
-\begin{equation}
- \min_{\mathbf{u}_{0:T}} \sum_{t=0}^{T} w_1 \mathrm{L_{\text{reg},t}} + w_2 \mathrm{L}_{\text{p},t} + w_3 \mathrm{L}_{\text{v},t} + w_4 \mathrm{L}_{\text{collision},t}
- \label{eq:mpc_opt}
-\end{equation}
+\block[titlewidthscale=0.385, bodywidthscale=0.385, titleoffsetx=-17.5cm, bodyoffsetx=-17.5cm, titleoffsety=1.2cm, bodyoffsety=1.2cm]{
+Discussion and Future Works}{
+\vspace{-0.39\baselineskip}
+\fontsize{38}{40}\selectfont
 
+    \parbox{0.54\linewidth}{
+        We created a 10-hour dataset of boxing motions to develop a model for generating intelligent VR responses.
+    }
+    \vspace{-0.5\baselineskip}
 }
-}
+\block[titlewidthscale=0.1, bodywidthscale=0.1, titleoffsetx=-3cm, bodyoffsetx=-3cm, titleoffsety=8.4cm, bodyoffsety=8.4cm]{Video}{
+\vspace{-0.7\baselineskip}
 
-\block[titlewidthscale=0.385, bodywidthscale=0.385, titleoffsetx=-17.5cm, bodyoffsetx=-17.5cm, titleoffsety=1.3cm, bodyoffsety=1.3cm]{Discussion and Future Works}{
-    We created a 10-hour dataset of boxing motions\\ showcasing various interactions, techniques, \\ and styles. This dataset is being used to develop \\ an  interaction motion synthesis model for \\ generating intelligent VR responses.
+\hspace{-0.5\baselineskip}
+    \qrcode[height=4.5cm]{https://youtu.be/agatO-jXEZk}
+\vspace{-0.6\baselineskip}
 }
-\block[titlewidthscale=0.14, bodywidthscale=0.14, titleoffsetx=-2.2cm, bodyoffsetx=-2.2cm, titleoffsety=11.75cm, bodyoffsety=11.75cm]{Video}{
-    
-\qrcode[height=6.2cm]{https://youtu.be/agatO-jXEZk}
-}
-\block[titlewidthscale=0.46, bodywidthscale=0.46, titleoffsetx=15.4cm, bodyoffsetx=15.4cm, titleoffsety=11.8cm, bodyoffsety=11.8cm]{Visualization}{
+\block[titlewidthscale=0.49, bodywidthscale=0.49, titleoffsetx=14.5cm, bodyoffsetx=14.5cm, titleoffsety=8.4cm, bodyoffsety=8.4cm]{Visualization}{
+\vspace{-0.6\baselineskip}
     \begin{tikzpicture}[inner sep=0pt, outer sep=0pt]
         % First image
-        \node (img1) at (0,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image20.png}};
+        \node (img1) at (0,0) {\includegraphics[width=4.5cm, height=4.5cm]{figures/image20.png}};
         
         % Second image to the right of the first
-        \node (img2) at (1.9,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image21.png}};
+        \node (img2) at (2,0) {\includegraphics[width=4.5cm, height=4.5cm]{figures/image21.png}};
         
         % Third image to the right of the second
-        \node (img3) at (3.8,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image23.png}};
-        \node (img4) at (5.7,0) {\includegraphics[width=5cm, height=6.2cm]{figures/image19.png}};        
+        \node (img3) at (3.9,0) {\includegraphics[width=4.5cm, height=4.5cm]{figures/image23.png}};
+        \node (img4) at (5.9,0) {\includegraphics[width=4.5cm, height=4.5cm]{figures/image19.png}};        
         % Arrows between images
-        \draw[->, line width=2mm] (img1.east) -- (img2.west);
-        \draw[->, line width=2mm] (img2.east) -- (img3.west);
-        \draw[->, line width=2mm] (img3.east) -- (img4.west);
-    \end{tikzpicture}
-}
+        \draw[->, line width=1.5mm] (img1.east) -- (img2.west);
+        \draw[->, line width=1.5mm] (img2.east) -- (img3.west);
+        \draw[->, line width=1.5mm] (img3.east) -- (img4.west);
 
+    \end{tikzpicture}
+\vspace{-1.7\baselineskip}
+}
    
 
-\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1cm, bodyoffsety=1cm]{References}{   
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1.3cm, bodyoffsety=1.3cm]{References}{   \vspace{-0.6\baselineskip}
         \renewcommand*{\bibfont}{\small} 
         \printbibliography[heading=none]
-   
+   \vspace{-0.6\baselineskip}
 }
 \end{columns}
 
