@@ -326,10 +326,10 @@
 }{
     \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
         \ifBlockHasTitle %
-            \draw[color=red, fill=red] (blockbody.south west) rectangle (blocktitle.north east);
-            \draw[color=red, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+            \draw[color=brown, fill=brown] (blockbody.south west) rectangle (blocktitle.north east);
+            \draw[color=brown, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
         \else
-            \draw[color=red, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+            \draw[color=brown, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
         \fi
     \end{scope}
 }
