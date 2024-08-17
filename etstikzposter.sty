@@ -55,19 +55,21 @@
 % etsDarkBlue
 % etsBlack
 % etsWhite
+\definecolor{etsDarkBlue}{cmyk}{1, 0.5, 0, 0.3}
+\definecolor{etsMutedGreen}{cmyk}{0.3, 0, 0.3, 0}
+\definecolor{etsVibrantPurple}{cmyk}{0, 0.3, 1, 0.3}
 
 \definecolor{etsDarkPurple}{cmyk}{0.94,1.00,0.36,0.48}
 \definecolor{etsDarkGreen}{cmyk}{0.88,0.49,0.59,0.60}
-\definecolor{etsDarkBlue}{cmyk}{1.00,0.87,0.43,0.46}
+
 \definecolor{etsDarkYellow}{cmyk}{0.59,0.51,0.54,0.50}
 \definecolor{etsDarkPink}{cmyk}{0.57,1.00,0.36,0.60}
-\definecolor{etsVibrantPurple}{cmyk}{0.87,1.00,0.18,0.06}
 \definecolor{etsVibrantGreen}{cmyk}{0.62,0.00,0.83,0.00}
 \definecolor{etsVibrantBlue}{cmyk}{0.66,0.00,0.29,0.00}
 \definecolor{etsVibrantYellow}{cmyk}{0.00,0.23,0.84,0.00}
 \definecolor{etsVibrantPink}{cmyk}{0.24,0.99,0.31,0.15}
 \definecolor{etsMutedPurple}{cmyk}{0.25,0.33,0.18,0.02}
-\definecolor{etsMutedGreen}{cmyk}{0.27,0.10,0.41,0.01}
+
 \definecolor{etsMutedBlue}{cmyk}{0.33,0.02,0.11,0.00}
 \definecolor{etsMutedYellow}{cmyk}{0.17,0.13,0.22,0.01}
 \definecolor{etsMutedPink}{cmyk}{0.13,0.33,0.15,0.01}
@@ -308,10 +310,10 @@
 }{
     \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
         \ifBlockHasTitle %
-            \draw[color=blocktitlebgcolor, fill=blocktitlebgcolor] (blockbody.south west) rectangle (blocktitle.north east);
-            \draw[color=blocktitlebgcolor, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+            \draw[color=etsDarkBlue, fill=etsDarkBlue] (blockbody.south west) rectangle (blocktitle.north east);
+            \draw[color=etsDarkBlue, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
         \else
-            \draw[color=blocktitlebgcolor, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+            \draw[color=etsDarkBlue, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
         \fi
     \end{scope}
 }
@@ -326,10 +328,10 @@
 }{
     \begin{scope}[line width=\blocklinewidth, rounded corners=\blockroundedcorners]
         \ifBlockHasTitle %
-            \draw[color=brown, fill=brown] (blockbody.south west) rectangle (blocktitle.north east);
-            \draw[color=brown, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+            \draw[color=etsVibrantPurple, fill=etsVibrantPurple] (blockbody.south west) rectangle (blocktitle.north east);
+            \draw[color=etsVibrantPurple, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
         \else
-            \draw[color=brown, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
+            \draw[color=etsVibrantPurple, fill=blockbodybgcolor] (blockbody.south west) rectangle (blockbody.north east);
         \fi
     \end{scope}
 }
@@ -345,12 +347,12 @@
     \begin{scope}[line width=\innerblocklinewidth, rounded
             corners=\innerblockroundedcorners, solid]
         \ifInnerblockHasTitle %
-            \draw[color=innerblocktitlebgcolor, fill=innerblocktitlebgcolor]
+            \draw[color=etsMutedGreen, fill=etsMutedGreen]
             (innerblockbody.south west) rectangle (innerblocktitle.north east);
-            \draw[color=innerblocktitlebgcolor, fill=innerblockbodybgcolor]
+            \draw[color=etsMutedGreen, fill=innerblockbodybgcolor]
             (innerblockbody.south west) rectangle (innerblockbody.north east);
         \else
-            \draw[color=innerblocktitlebgcolor, fill=innerblockbodybgcolor]
+            \draw[color=etsMutedGreen, fill=innerblockbodybgcolor]
             (innerblockbody.south west) rectangle (innerblockbody.north east);
         \fi
     \end{scope}
