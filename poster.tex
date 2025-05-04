@@ -32,7 +32,7 @@
 %  Bibliography
 % -----------------------------------------------------------------
 \usepackage[backend=bibtex]{biblatex}
-\addbibresource{main.bib}
+\addbibresource{poster.bib}
 
 % -----------------------------------------------------------------
 %  Poster metadata
@@ -179,17 +179,30 @@
 \column{0.5}
 
 % -------------------- Kinematics optimisation ------------------
-\block[titleoffsety=0.25cm,bodyoffsety=0.25cm]{Kinematics Optimisation}{
-  \fontsize{38}{40}\selectfont
-  Optimise SMPL $\theta$ by
-  \[
-    \min_{\theta}\!
-      \sum\nolimits_t(
-        w_1L_{2D}+w_2L_{3D}+w_3L_{\text{reg}}+
-        w_4L_{\text{smooth}}+w_5L_{\text{GMM}}+w_6L_{\text{Vposer}}).
-  \]
-}
+\block[titleoffsety=0.25cm, bodyoffsety=0.25cm]{Kinematics Optimization}{
+\fontsize{38}{40}\selectfont
+Our kinematics optimization refines the SMPL model to minimize the difference between the provided 2D poses ($\mathbf{J}_{\text{2D}}$) from multiple views and 3D keypoints ($\mathbf{J}_{\text{3D}}$) obtained from triangulation. The process ensures temporal coherency and natural motion by incorporating smoothness and human motion priors. An LBFGS optimizer is used to solve the minimization problem, considering various loss terms, including 2D re-projection, 3D alignment, smoothness, and prior losses.
+\vspace{0.4\baselineskip}
 
+\fontsize{30}{36}\selectfont
+\innerblock{Kinematics Optimization Formulation: 
+$\min\limits_{\theta} w_1 \, \mathrm{L}_\text{2D} + w_2 \, \mathrm{L}_\text{3D} + w_3 \, \mathrm{L}_\text{reg} + w_4 \, \mathrm{L}_\text{smooth} + w_5 \, \mathrm{L}_{\text{GMM}} + w_6 \, \mathrm{L}_{\text{Vposer}}$}{
+    \begin{multicols}{2}
+        \begin{itemize}
+            \item \textbf{2D Re-projection Loss}: Aligns the 3D joints with 2D joints using re-projection, weighted by confidence.\\ $\mathrm{L}_\text{2D} = \sum\limits_{\text{j} \in \text{$\mathcal{V}$}} \, \sum\limits_{\text{i} \in \text{$\mathbf{J}_{2D}$}} c_\text{j,i} \rho (\mathrm{J}_{\text{proj}_{j,i}} - \mathrm{J}_{2D_{j,i}})$ 
+            \vspace{-0.39\baselineskip}
+            \item \textbf{3D Alignment Loss}:  Minimizes the difference between predicted and actual 3D joint positions considering confidence. 
+            \\ $\mathrm{L}_\text{3D} = \sum\limits_{\text{i} \in \text{$\mathbf{J}_{3D}$}} c_i \| \mathrm{J}_i(\theta, \beta) - \mathrm{J}_{3D,i}\|^2$
+            \item \textbf{Smoothness Loss}: Ensures temporal consistency by minimizing differences in poses and vertices over time.\\
+            $\mathrm{L}_{\text{smooth}} = \sum\limits_{t} \| \theta^t - \theta^{t-1} \|^2 + \| \mathcal{M}(\theta^t, \beta) - \mathcal{M}(\theta^{t-1}, \beta) \|^2$
+            \vspace{-0.54\baselineskip}
+            \item \textbf{Prior Loss}:  Guides the optimization towards natural poses using GMM and Vposer priors. \\ $\mathrm{L}_{\text{GMM}} = \frac{1}{N} \sum\limits_{i=1}^{N} \text{GMM}(\theta_i, \beta), \quad \mathrm{L}_{\text{Vposer}} = \frac{1}{N} \sum\limits_{i=1}^{N} (\text{z}(\theta_i)^{2})$
+        \end{itemize}
+    \end{multicols}
+    \vspace{-0.39\baselineskip}
+}
+\vspace{-0.7\baselineskip}
+}
 % ---------------- Physics body model generator -----------------
 \useblockstyle{blockred}
 \block{Physics Body Model Generator}{
@@ -272,25 +285,31 @@ The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}
 % -----------------------------------------------------------------
 %  Contact banner
 % -----------------------------------------------------------------
-\node[above right,text=titlefgcolor,fill=titlebgcolor,
-      minimum width=\textwidth,minimum height=2cm,
-      align=left,inner sep=2mm,outer sep=0pt] at (bottomleft)
-  {
+% Node for images at the bottom of the poster
+\node [above right,
+    text=titlefgcolor,
+    outer sep=0pt,
+    minimum width=\textwidth,
+    minimum height=2cm, % Increased height for more space
+    align=left,
+    fill=titlebgcolor, inner sep=2mm] at (bottomleft) { % Increased inner sep
     \hspace{-1900pt}
-    \begin{tikzpicture}[scale=0.3]
-      \draw (0,0)--(1,0)--(1,0.7)--(0,0.7)--cycle;
-      \draw (0,0.7)--(0.5,0.35)--(1,0.7);
-    \end{tikzpicture}\;
-    \href{mailto:hfa.zadeh.k@gmail.com}{\Large hfa.zadeh.k@gmail.com}
-    \hspace{150pt}
-    \Large Linked\,
-    \tikz[baseline=(i.base)]
-      \node[fill=blue,rounded corners=0.5ex,text=white,inner sep=0.3ex](i){\large in};
-    \href{https://ca.linkedin.com/in/hosseinfeiz}{\Large Hossein Feiz}
-    \hspace{150pt}
-    \tikz[baseline=(i.base)]
-      \node[fill=black,rounded corners=0.5ex,text=white,font=\bfseries\sffamily\Large,inner sep=0.4ex](i){X};
-    \href{https://x.com/hosseinfeiz1}{\Large hosseinfeiz1}
-  };
+    \begin{tikzpicture}[scale=0.3] % Increased scale for the envelope
+        \draw (0,0) -- (1,0) -- (1,0.7) -- (0,0.7) -- cycle; % Envelope outline
+        \draw (0,0.7) -- (0.5,0.35) -- (1,0.7); % Envelope flap
+    \end{tikzpicture}
+
+    \href{mailto:hfa.zadeh.k@gmail.com}{\Large hfa.zadeh.k@gmail.com} % Increased font size
+    \hspace{150pt} % Adjusted spacing
+    \Large Linked
+    \tikz[baseline=(i.base)]\node[fill=blue, rounded corners=0.5ex, text=white, inner sep=0.3ex, outer sep=0pt, minimum width=0pt, minimum height=0pt](i) {\large in}; % Increased font and inner sep
+    
+    \href{https://ca.linkedin.com/in/hosseinfeiz}{\Large Hossein Feiz} % Increased font size
+    \hspace{150pt} % Adjusted spacing
+    
+    \tikz[baseline=(i.base)]\node[fill=black, rounded corners=0.5ex, text=white, font=\bfseries\sffamily\Large, inner sep=0.4ex, outer sep=0pt, minimum width=0pt, minimum height=0pt](i) {X}; % Increased font size and inner sep
+    
+    \href{https://x.com/hosseinfeiz1}{\Large hosseinfeiz1} % Increased font size
+};
 
 \end{document}
