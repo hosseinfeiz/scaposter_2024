@@ -1,0 +1,220 @@
+% =================================================================
+%  feiztikzposter.sty   ––  A TikZ-poster house style for FEIZ
+%  derived from the original ETS template –– all identifiers
+%  ‘ets’ → ‘feiz’.
+%  2025-05-04
+% =================================================================
+\ProvidesPackage{feiztikzposter}[2025/05/04 FEIZ TikZ Poster Style]
+
+% -----------------------------------------------------------------
+%  Base dependencies
+% -----------------------------------------------------------------
+\RequirePackage{feiztikzposter}   % the core poster class
+\RequirePackage{xcolor}
+\RequirePackage{xkeyval}
+\RequirePackage{ifthen}
+
+\makeatletter
+
+% -----------------------------------------------------------------
+%  Key lengths
+% -----------------------------------------------------------------
+\newlength{\feiztikzposter@logoheight}
+\newlength{\feiztikzposter@logorightmargin}
+\newlength{\feiztikzposter@bannerheight}
+\newlength{\feiztikzposter@margin}
+\newlength{\feiztikzposter@titleinnersep}
+
+\ifthenelse{\lengthtest{\paperwidth > \paperheight}}{% landscape
+  \setlength{\feiztikzposter@logoheight}{3.45cm}
+  \setlength{\feiztikzposter@logorightmargin}{1.15cm}
+  \setlength{\feiztikzposter@bannerheight}{13.27cm}
+}{% portrait
+  \setlength{\feiztikzposter@logoheight}{3.5cm}
+  \setlength{\feiztikzposter@logorightmargin}{2.15cm}
+  \setlength{\feiztikzposter@bannerheight}{15.23cm}
+}
+\setlength{\feiztikzposter@margin}{1.5cm}
+\setlength{\feiztikzposter@titleinnersep}{1.5cm}
+
+% -----------------------------------------------------------------
+%  Allow use of \title, \author, \institute if desired
+% -----------------------------------------------------------------
+\settitle{%
+  \vspace*{-\titleinnersep}\vspace*{\TP@innermargin}%
+  \hspace*{-\titleinnersep}\hspace*{\TP@innermargin}%
+  {\color{titlefgcolor}%
+    \begin{minipage}{\titlewidth - 2\TP@innermargin}
+      {\bfseries\Huge\@title\par}
+      \begin{minipage}{%
+        \titlewidth - \feiztikzposter@logorightmargin
+        - 4.15\feiztikzposter@logoheight - 2\TP@innermargin}
+        \vspace*{\titleinnersep}\huge\@author\par
+        \vspace*{\titleinnersep}\large\@institute
+      \end{minipage}%
+    \end{minipage}}}
+
+% -----------------------------------------------------------------
+%  FEIZ colour palette
+% -----------------------------------------------------------------
+\definecolor{feizDarkBlue}{cmyk}{1,0.5,0,0.3}
+\definecolor{feizWhite}{cmyk}{0,0,0,0}
+\definecolor{feizVibrantPink}{cmyk}{0.24,0.99,0.31,0.15}
+\definecolor{feizVibrantPurple}{cmyk}{0,0.3,1,0.3}
+\definecolor{feizDarkYellow}{cmyk}{0.59,0.51,0.54,0.50}
+\definecolor{feizMutedGreen}{cmyk}{0.3,0,0.3,0}
+\definecolor{feizVibrantGreen}{cmyk}{0.62,0,0.83,0}
+
+% -----------------------------------------------------------------
+%  Base colour style (inherits Default then overrides)
+% -----------------------------------------------------------------
+\usecolorstyle{Default}
+
+\definecolorstyle{feizDarkYellow}{%
+  \definecolor{colorOne}{named}{feizDarkYellow}
+  \definecolor{colorTwo}{named}{feizWhite}
+  \definecolor{colorThree}{named}{feizVibrantPink}
+}{%
+  \colorlet{backgroundcolor}{colorTwo}
+  \colorlet{framecolor}{colorTwo}
+  \colorlet{titlefgcolor}{colorTwo}
+  \colorlet{titlebgcolor}{colorOne}
+  \colorlet{blocktitlebgcolor}{colorOne}
+  \colorlet{blocktitlefgcolor}{colorTwo}
+  \colorlet{blockbodybgcolor}{feizWhite}
+  \colorlet{blockbodyfgcolor}{black}
+  \colorlet{innerblocktitlebgcolor}{colorThree}
+  \colorlet{innerblocktitlefgcolor}{feizWhite}
+  \colorlet{innerblockbodybgcolor}{feizWhite}
+  \colorlet{innerblockbodyfgcolor}{black}
+  \colorlet{notefgcolor}{feizWhite}
+  \colorlet{notebgcolor}{colorThree}
+  \colorlet{notefrcolor}{colorThree}
+}
+
+\usecolorstyle{feizDarkYellow}
+
+% -----------------------------------------------------------------
+%  Title style
+% -----------------------------------------------------------------
+\definetitlestyle{feiz}{%
+  width=\paperwidth,
+  linewidth=10pt,
+  innersep=\feiztikzposter@titleinnersep,
+  titletotopverticalspace=0mm,
+  titletoblockverticalspace=\feiztikzposter@margin
+}{%
+  \tikzset{
+    x=\feiztikzposter@logoheight,
+    y=\feiztikzposter@logoheight,
+    banner/.style={fill=titlebgcolor},
+    portico/.style={fill=titlefgcolor}}
+  \newcommand{\rightmarginfeiz}{\feiztikzposter@logorightmargin}
+  \begin{scope}[shift={(\titleposright-\rightmarginfeiz,\titleposbottom)}]
+  \end{scope}
+}
+\usetitlestyle{feiz}
+
+% -----------------------------------------------------------------
+%  Block styles
+% -----------------------------------------------------------------
+\defineblockstyle{feiz}{%
+  titlewidthscale=1,bodywidthscale=1,titleleft,
+  titleoffsetx=0pt,titleoffsety=0pt,
+  bodyoffsetx=0pt,bodyoffsety=0pt,
+  bodyverticalshift=0pt,roundedcorners=2pt,
+  linewidth=0.1cm,titleinnersep=0.5cm,bodyinnersep=1cm
+}{%
+  \begin{scope}[line width=\blocklinewidth,rounded corners=\blockroundedcorners]
+    \ifBlockHasTitle
+      \draw[color=feizDarkBlue,fill=feizDarkBlue]
+        (blockbody.south west) rectangle (blocktitle.north east);
+      \draw[color=feizDarkBlue,fill=blockbodybgcolor]
+        (blockbody.south west) rectangle (blockbody.north east);
+    \else
+      \draw[color=feizDarkBlue,fill=blockbodybgcolor]
+        (blockbody.south west) rectangle (blockbody.north east);
+    \fi
+  \end{scope}
+}
+
+\defineblockstyle{blockred}{%
+  titlewidthscale=1,bodywidthscale=1,titleleft,
+  titleoffsetx=0pt,titleoffsety=0pt,
+  bodyoffsetx=0pt,bodyoffsety=0pt,
+  bodyverticalshift=0pt,roundedcorners=2pt,
+  linewidth=0.1cm,titleinnersep=0.5cm,bodyinnersep=1cm
+}{%
+  \begin{scope}[line width=\blocklinewidth,rounded corners=\blockroundedcorners]
+    \ifBlockHasTitle
+      \draw[color=feizVibrantPurple,fill=feizVibrantPurple]
+        (blockbody.south west) rectangle (blocktitle.north east);
+      \draw[color=feizVibrantPurple,fill=blockbodybgcolor]
+        (blockbody.south west) rectangle (blockbody.north east);
+    \else
+      \draw[color=feizVibrantPurple,fill=blockbodybgcolor]
+        (blockbody.south west) rectangle (blockbody.north east);
+    \fi
+  \end{scope}
+}
+
+% -----------------------------------------------------------------
+%  Inner-block styles
+% -----------------------------------------------------------------
+\defineinnerblockstyle{feiz}{%
+  titlewidthscale=1,bodywidthscale=1,titleleft,
+  titleoffsetx=0pt,titleoffsety=0pt,
+  bodyoffsetx=0pt,bodyoffsety=0pt,
+  bodyverticalshift=0pt,roundedcorners=5,
+  linewidth=4pt,titleinnersep=10pt,bodyinnersep=12pt
+}{%
+  \begin{scope}[line width=\innerblocklinewidth,
+                rounded corners=\innerblockroundedcorners,solid]
+    \ifInnerblockHasTitle
+      \draw[color=feizMutedGreen,fill=feizMutedGreen]
+        (innerblockbody.south west)
+        rectangle (innerblocktitle.north east);
+      \draw[color=feizMutedGreen,fill=innerblockbodybgcolor]
+        (innerblockbody.south west)
+        rectangle (innerblockbody.north east);
+    \else
+      \draw[color=feizMutedGreen,fill=innerblockbodybgcolor]
+        (innerblockbody.south west)
+        rectangle (innerblockbody.north east);
+    \fi
+  \end{scope}
+}
+
+\defineinnerblockstyle{greeninnerblock}{%
+  titlewidthscale=1,bodywidthscale=1,titleleft,
+  titleoffsetx=0pt,titleoffsety=0pt,
+  bodyoffsetx=0pt,bodyoffsety=0pt,
+  bodyverticalshift=0pt,roundedcorners=5,
+  linewidth=4pt,titleinnersep=10pt,bodyinnersep=12pt
+}{%
+  \begin{scope}[line width=\innerblocklinewidth,
+                rounded corners=\innerblockroundedcorners,solid]
+    \ifInnerblockHasTitle
+      \draw[color=feizVibrantGreen,fill=feizVibrantGreen]
+        (innerblockbody.south west)
+        rectangle (innerblocktitle.north east);
+      \draw[color=feizVibrantGreen,fill=innerblockbodybgcolor]
+        (innerblockbody.south west)
+        rectangle (innerblockbody.north east);
+    \else
+      \draw[color=feizVibrantGreen,fill=innerblockbodybgcolor]
+        (innerblockbody.south west)
+        rectangle (innerblockbody.north east);
+    \fi
+  \end{scope}
+}
+
+\useblockstyle{feiz}
+\useinnerblockstyle{feiz}
+
+% -----------------------------------------------------------------
+%  Remove “Made with TikZposter” footer
+% -----------------------------------------------------------------
+\tikzposterlatexaffectionproofoff
+
+\makeatother
