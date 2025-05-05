@@ -1,4 +1,4 @@
-\documentclass[a0paper,landscape]{tikzposter}
+\documentclass[a0paper,landscape, blockverticalspace=1cm]{tikzposter}
 
 % -----------------------------------------------------------------
 %  FEIZ TikZ Poster style
@@ -19,6 +19,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{libertinus}
+\usepackage{caption} 
 
 % -----------------------------------------------------------------
 %  Fonts & math
@@ -38,34 +39,45 @@
 %  Poster metadata
 % -----------------------------------------------------------------
 \title{Multi-person Physics-based Pose Estimation for Combat Sports}
-\author{Hossein Feiz \quad David Labbé \quad Sheldon Andrews}
-\institute{\Large École de technologie supérieure, Montréal, Québec, Canada}
+\author{
+Hossein Feiz$^{1}$ \quad
+David Labbé$^{1}$ \quad
+Thomas Romeas$^{2}$ \quad
+Jocelyn Faubert$^{2}$ \quad
+Sheldon Andrews$^{1}$\\[6pt]
+% {\small $^{1}$École de technologie supérieure, Montreal, Canada}\\
+% {\small \tt\small \{hossein.feizollah-zadeh-khoiee.1,david.labbe,sheldon.andrews\}@etsmtl.ca}\\[4pt]
+% {\small $^{2}$Université de Montréal, Montreal, Canada}\\
+% {\small \tt\small \{thomas.romeas,jocelyn.faubert\}@umontreal.ca}
+}
 
 \begin{document}
 \maketitle
-
 % -----------------------------------------------------------------
 %  Big header banner with logos
 % -----------------------------------------------------------------
 \node[text=titlefgcolor,fill=titlebgcolor,
-      minimum width=\textwidth,minimum height=8cm,
-      align=center,inner sep=1mm,outer sep=0pt] at (0,11)
-  {
-    \hspace*{900pt}
-    \begin{minipage}[c]{0.77\linewidth}
-      \centering
-      {\fontsize{80}{90}\selectfont\bfseries
-        Multi-person Physics-based Pose Estimation for Combat Sports\par}
-      \vspace{2pt}
-      {\fontsize{60}{80}\selectfont
-        Hossein Feiz \quad David Labbé \quad Sheldon Andrews\par}
-      \vspace{2pt}
-      {\fontsize{30}{40}\selectfont
-        École de technologie supérieure, Montréal, Québec, Canada}
-    \end{minipage}
-    \hspace*{-1350pt}
+      minimum width=\textwidth, minimum height=8cm,
+      align=center, inner sep=1mm, outer sep=0pt] at (0,11)
+{
+  \begin{minipage}[c]{0.8\linewidth}
+    \centering
+    {\fontsize{80}{90}\bfseries Multi-person Physics-based Pose Estimation for Combat Sports\par}
+    \vspace{6pt}
+    {\fontsize{40}{50}\selectfont
+      Hossein Feiz\textsuperscript{1}, 
+      David Labbé\textsuperscript{1}, 
+      Thomas Romeas\textsuperscript{2}, 
+      Jocelyn Faubert\textsuperscript{2}, 
+      Sheldon Andrews\textsuperscript{1}\par}
+    \vspace{4pt}
+    {\fontsize{30}{36}\selectfont
+      \textsuperscript{1}École de technologie supérieure, Montréal, Québec, Canada\quad
+      \textsuperscript{2}Université de Montréal, Montréal, Québec, Canada\par}
+  \end{minipage}
+    \hspace*{-2400pt}
     \begin{minipage}[c]{\linewidth}
-      \centering
+    \hspace*{2300pt}
       \includegraphics[height=5cm]{figures/podium.eps}\hspace{40pt}%
       \includegraphics[height=4.5cm]{figures/ins.eps}\hspace{40pt}%
       \includegraphics[height=4.5cm]{figures/ets.eps}\hspace{40pt}%
@@ -84,73 +96,42 @@
 \column{0.5}
 
 % ------------------------- Introduction ------------------------
-\block[titleoffsety=0.25cm,bodyoffsety=0.25cm]{Introduction}{
-  \fontsize{36}{40}\selectfont
-  Motion capture in sports scenes like boxing presents challenges due to
-  occlusion, crowding, and fast movements. We use a multi-view setup that
-  requires visibility from only two cameras. Our pipeline produces realistic
-  motions through multi-person physics optimisation while accounting for
-  inter-character collisions.
+% --------------------------- Pipeline -------------------------------
+\vspace{-100pt}
+
+\block[
+  titleoffsetx=0cm, bodyoffsetx=0cm,
+  titleoffsety=1cm, bodyoffsety=1cm
+]{Pipeline}{
+  \centering
+  % ───── pipeline illustration ──────────────────────────────────────────────
+  \input{figure.tex}
+  % ──────────────────────────────────────────────────────────────────────────
+
+  \captionof{figure}{%
+    Overview of our proposed pipeline. Initially, bounding boxes
+    (\(\mathbf{bboxes}\)) and robust identity tracking (\(\mathrm{id}\))
+    are generated for each individual in the scene. These tracking
+    results facilitate accurate 2D pose estimation (\(\mathbf{J}_{2D}\))
+    using ViTPose \cite{xu2022vitpose}. The subsequent triangulation
+    yields smoothed 3D keypoints (\(\mathbf{J}_{3D}\)). These keypoints
+    feed the kinematic optimisation stage, which outputs SMPL parameters
+    (\(\boldsymbol{\theta},\boldsymbol{\beta}\)). Finally, the optimised
+    3D joint positions (\(\mathbf{p}\)), pose states (\(\mathbf{q}\)),
+    and velocity states (\(\mathbf{v}\)) guide an iLQR-based
+    model-predictive controller \cite{howell2022} to remove physical
+    artefacts and refine motion quality.%
+  }\label{fig:3d}
 }
-
-% --------------------------- Pipeline --------------------------
-\block[titleoffsetx=0cm,bodyoffsetx=0cm,
-       titleoffsety=1cm,bodyoffsety=1cm]{Pipeline}{
-  % diagram
-  \begin{overpic}[scale=3]{figures/pipeline.pdf}
-    \color{white}
-    \put(15,32){\rotatebox{-90}{\fontsize{22}{16}\selectfont Yolov8}}
-    \put(22,32){\rotatebox{-90}{\fontsize{22}{16}\selectfont XMem}}
-    \put(27.5,36){\rotatebox{-90}{\fontsize{22}{16}\selectfont Epipolar Constraints}}
-    \put(34,32){\rotatebox{-90}{\fontsize{22}{16}\selectfont ViTPose}}
-    \put(75,36){\fontsize{35}{18}\selectfont
-      $\mathrm{L}_{\text{GMM}}+\mathrm{L}_{\text{Vposer}}$}
-    \put(18,8){\fontsize{25}{25}\selectfont Physics Body Model Generator}
-    \put(73,22.5){\fontsize{38}{15.8}\selectfont
-      $\mathrm{L}_{2D}+\mathrm{L}_{3D}+\mathrm{L}_\beta$}
-    \put(63,1.3){\fontsize{36}{16}\selectfont
-      $\mathrm{L}_{p,t}+\mathrm{L}_{v,t}+\mathrm{L}_{\text{collision},t}$}
-
-    \color{black}
-    \put(18,35){\rotatebox{-90}{\fontsize{22}{16}\selectfont
-      $\mathbf{bboxes}$}}
-    \put(36.3,32){\rotatebox{-90}{\fontsize{22}{16}\selectfont
-      $\mathbf{J}_\text{2D}$}}
-    \put(66,32.5){\rotatebox{-90}{\fontsize{22}{16}\selectfont
-      $\mathbf{J}_\text{3D}$}}
-    \put(70.5,29.5){\fontsize{30}{25}\selectfont Kinematics Optimisation}
-    \put(59,8){\fontsize{27}{25}\selectfont Multi-person Dynamics Optimisation}
-    \put(14,39){\fontsize{20}{20}\selectfont Multi-frame Multi-view Tracking IDs}
-    \put(74,14){\fontsize{40}{16}\selectfont $\mathbf{q},\mathbf{v},\mathbf{p}$}
-    % example thumbs
-    \put(0.5,18){\includegraphics[scale=0.36]{figures/p1.png}}
-    \put(0.5,32){\includegraphics[scale=0.29]{figures/p2.png}}
-    \put(95,23){\includegraphics[scale=0.2]{figures/smpl2.png}}
-    \put(0.5,9){\includegraphics[scale=0.13]{figures/smpl-fat.png}}
-    \put(0,0){\includegraphics[scale=0.13]{figures/smpl-tall.png}}
-    \put(47.2,9){\includegraphics[scale=0.13]{figures/mujoco-fat.png}}
-    \put(47,0){\includegraphics[scale=0.13]{figures/mujoco-tall.png}}
-    \put(93,2){\includegraphics[scale=0.28]{figures/final.png}}
-  \end{overpic}
-
-  \vspace{1em}
-  \fontsize{36}{42}\selectfont
-  The pipeline begins with bounding boxes ($\mathbf{bboxes}$) and robust
-  tracking IDs. 2D poses ($\mathbf{J}_\text{2D}$) from ViTPose~\cite{xu2022vitpose}
-  are triangulated to 3D ($\mathbf{J}_\text{3D}$). Kinematics optimisation fits
-  SMPL ($\theta,\beta$), then an iLQR physics stage \cite{howell2022} corrects
-  artefacts using state $(\mathbf{q},\mathbf{v},\mathbf{p})$.
-}
-
 % ------------- Multi-frame / Multi-view tracking IDs -----------
-\block[titleoffsetx=0cm,bodyoffsetx=0cm,
-       titleoffsety=1cm,bodyoffsety=1cm]{Multi-frame Multi-view Tracking IDs}{
-  \begin{itemize}\fontsize{29}{34}\selectfont
-    \item \textbf{Tracking by segmentation}: XMem memory for stable IDs \cite{cheng2022xmem}
-    \item \textbf{Epipolar ID matching}: Centroid \& epipolar constraints \cite{wohler20093d}
-    \item \textbf{Top-down 2D poses}: ViTPose inside each box \cite{xu2022vitpose}
-  \end{itemize}
-}
+% \block[titleoffsetx=0cm,bodyoffsetx=0cm,
+%        titleoffsety=1cm,bodyoffsety=1cm]{Multi-frame Multi-view Tracking IDs}{
+%   \begin{itemize}\fontsize{29}{34}\selectfont
+%     \item \textbf{Tracking by segmentation}: XMem memory for stable IDs \cite{cheng2022xmem}
+%     \item \textbf{Epipolar ID matching}: Centroid \& epipolar constraints \cite{wohler20093d}
+%     \item \textbf{Top-down 2D poses}: ViTPose inside each box \cite{xu2022vitpose}
+%   \end{itemize}
+% }
 
 % -------------- Weighted triangulation & filtering -------------
 \block[titleoffsetx=0cm,bodyoffsetx=0cm,
@@ -172,13 +153,6 @@
   SVD yields $(x,y,z)$. Cubic-spline smoothing removes outliers; an EKF fills
   missing frames when triangulation fails.
 }
-
-% ---------------------------------------------------------------
-%  Right column
-% ---------------------------------------------------------------
-\column{0.5}
-
-% -------------------- Kinematics optimisation ------------------
 \block[titleoffsety=0.25cm, bodyoffsety=0.25cm]{Kinematics Optimization}{
 \fontsize{38}{40}\selectfont
 Our kinematics optimization refines the SMPL model to minimize the difference between the provided 2D poses ($\mathbf{J}_{\text{2D}}$) from multiple views and 3D keypoints ($\mathbf{J}_{\text{3D}}$) obtained from triangulation. The process ensures temporal coherency and natural motion by incorporating smoothness and human motion priors. An LBFGS optimizer is used to solve the minimization problem, considering various loss terms, including 2D re-projection, 3D alignment, smoothness, and prior losses.
@@ -203,18 +177,22 @@ $\min\limits_{\theta} w_1 \, \mathrm{L}_\text{2D} + w_2 \, \mathrm{L}_\text{3D} 
 }
 \vspace{-0.7\baselineskip}
 }
-% ---------------- Physics body model generator -----------------
-\useblockstyle{blockred}
-\block{Physics Body Model Generator}{
-  \fontsize{38}{40}\selectfont
-  For $K$ humanoids the state is
-  $\mathbf{x}_t=(\mathbf{q}_t,\mathbf{v}_t)\in\mathbb{R}^{125K}$,
-  with $\mathbf{p}_t\in\mathbb{R}^{21K}$ SMPL joints. We export to
-  MuJoCo XML \cite{todorov2012mujoco}.
-}
+% ---------------------------------------------------------------
+%  Right column
+% ---------------------------------------------------------------
+\column{0.5}
 
+% -------------------- Kinematics optimisation ------------------
+
+% ---------------- Physics body model generator -----------------
+\block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1.23cm, bodyoffsety=1.23cm]{Physics Body Model Generator}{
+\vspace{-0.39\baselineskip}
+\fontsize{38}{40}\selectfont
+   Our goal is to reconstruct the motion of \( K \) physics-based humanoids at each time step \( t \). The combined state is \( \mathbf{x}_t = (\mathbf{q}_t, \mathbf{v}_t) \), where \( \mathbf{q}_t \in \mathbb{R}^{63K} \) is the joint rotations vector, and \( \mathbf{v}_t \in \mathbb{R}^{62K} \) is the joint velocities vector. The 3D SMPL joint positions are \( \mathbf{p}_t \in \mathbb{R}^{21K} \). The vector \( \mathbf{q}_t \) uses minimal coordinates for joint rotations, while \( \mathbf{p}_t \) represents the 3D positions relative to the humanoid's body frame, which are used in optimization. We used the Mujoco~\cite{todorov2012mujoco} XML format for multi-humanoid modeling.
+   \vspace{-0.39\baselineskip}
+}
 % ---------------- Multi-person dynamics opt --------------------
-\useblockstyle{feiz}
+\useblockstyle{ets}
 \block[titleoffsetx=0cm, bodyoffsetx=0cm, titleoffsety=1.3cm, bodyoffsety=1.3cm]{Multi-person Dynamics Optimization}{
 \vspace{-0.39\baselineskip}
 \fontsize{38}{40}\selectfont
@@ -243,38 +221,61 @@ The iLQR algorithm~\cite{howell2022} optimizes a control trajectory \(\mathbf{u}
 }
 
 % ---------------- Discussion & future work ---------------------
-\block[titlewidthscale=0.385,bodywidthscale=0.385,
-       titleoffsetx=-17.5cm,bodyoffsetx=-17.5cm,
-       titleoffsety=1.2cm,bodyoffsety=1.2cm]{Discussion and Future Works}{
-  \fontsize{38}{40}\selectfont
-  We captured a 10-hour boxing dataset to train VR agents. Next steps:
-  real-time inference and richer contact modelling.
+\block[titlewidthscale=0.385, bodywidthscale=0.385, titleoffsetx=-17.5cm, bodyoffsetx=-17.5cm, titleoffsety=1.2cm, bodyoffsety=1.2cm]{
+Discussion and Future Works}{
+\vspace{-0.39\baselineskip}
+\fontsize{38}{40}\selectfont
+
+    \parbox{0.54\linewidth}{
+        We created a 10-hour dataset of boxing motions to develop a model for generating intelligent VR responses.
+    }
+    \vspace{-0.5\baselineskip}
 }
 
 % ------------------------- Video QR ----------------------------
-\block[titlewidthscale=0.1,bodywidthscale=0.1,
-       titleoffsetx=-3cm,bodyoffsetx=-3cm,
-       titleoffsety=8.4cm,bodyoffsety=8.4cm]{Video}{
-  \qrcode[height=4.5cm]{https://youtu.be/agatO-jXEZk}
+
+
+\block[titlewidthscale=0.1, bodywidthscale=0.1, titleoffsetx=-3cm, bodyoffsetx=-3cm, titleoffsety=8.4cm, bodyoffsety=8.4cm]{Video}{
+\vspace{-0.7\baselineskip}
+
+\hspace{-0.5\baselineskip}
+    \qrcode[height=4.5cm]{https://youtu.be/agatO-jXEZk}
+\vspace{-0.6\baselineskip}
 }
 
 % --------------------- Visualisation strip ---------------------
-\block[titlewidthscale=0.49,bodywidthscale=0.49,
-       titleoffsetx=14.5cm,bodyoffsetx=14.5cm,
-       titleoffsety=8.4cm,bodyoffsety=8.4cm]{Visualisation}{
-  \begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
-    \definecolor{myCyan}{cmyk}{1,0.2,0,0.2}
-    \foreach \i/\x in {20/0,21/2,23/4,19/6}{
-      \node at (\x,0){\includegraphics[width=5cm]{figures/image\i.png}};
-    }
-    \draw[-{Latex[length=6mm,width=3mm]},line width=2mm,color=myCyan]
-      (0,0) -- node[above=6mm,font=\tiny\bfseries] {$\mathbf{J}_\text{2D}$} (2,0)
-      -- node[above=6mm,font=\tiny\bfseries] {$(\theta,\beta)$} (4,0)
-      -- node[above=6mm,font=\tiny\bfseries] {$(\mathbf{q},\tau)$} (6,0);
-  \end{tikzpicture}
-}
+\block[titlewidthscale=0.49, bodywidthscale=0.49, titleoffsetx=14.5cm, bodyoffsetx=14.5cm, titleoffsety=8.4cm, bodyoffsety=8.4cm]{Visualization}{
+\vspace{-0.7\baselineskip}
+    \begin{tikzpicture}[inner sep=0pt, outer sep=0pt]
 
+        % Define CMYK color for arrows
+        \definecolor{myCyan}{cmyk}{1, 0.2, 0, 0.2}
+
+        % First image
+        \node (img1) at (0,0) {\includegraphics[width=5cm, height=4.65cm]{figures/image20.png}};
+        
+        % Second image to the right of the first
+        \node (img2) at (2,0) {\includegraphics[width=5cm, height=4.65cm]{figures/image21.png}};
+        
+        % Third image to the right of the second
+        \node (img3) at (4,0) {\includegraphics[width=5cm, height=4.65cm]{figures/image23.png}};
+        
+        % Fourth image to the right of the third
+        \node (img4) at (6,0) {\includegraphics[width=5cm, height=4.65cm]{figures/image19.png}};
+        
+        % Fancy arrows between images with labels higher and in CMYK color
+        \draw[-{Latex[length=6mm, width=3mm, inset=0.5mm]}, line width=2mm, color=myCyan] 
+            (img1.east) -- node[above=6mm, font=\tiny\bfseries] {$\mathbf{J}_\text{2D}$} (img2.west);
+        \draw[-{Latex[length=6mm, width=3mm, inset=0.5mm]}, line width=2mm, color=myCyan] 
+            (img2.east) -- node[above=6mm, font=\tiny\bfseries] {$(\theta, \beta)$} (img3.west);
+        \draw[-{Latex[length=6mm, width=3mm, inset=0.5mm]}, line width=2mm, color=myCyan] 
+            (img3.east) -- node[above=6mm, font=\tiny\bfseries] {$(\mathbf{q}, \tau)$} (img4.west);
+
+    \end{tikzpicture}
+\vspace{-1.7\baselineskip}
+}
 % ---------------------- References -----------------------------
+\useblockstyle{blockred}
 \block{References}{
   \renewcommand*{\bibfont}{\small}
   \printbibliography[heading=none]
